@@ -28,6 +28,8 @@ To enable automatic publishing to npm, you need to set up the following secrets 
 - Pull requests to `main` branch  
 - GitHub releases
 
+**Runtime:** Node.js 22 LTS (latest AWS Lambda supported version)
+
 **Jobs:**
 - **test**: Runs type checking, linting, tests, and build
 - **coverage**: Generates test coverage reports

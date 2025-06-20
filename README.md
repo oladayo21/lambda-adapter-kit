@@ -220,7 +220,7 @@ interface ResponseConversionOptions {
 
 ### Prerequisites
 
-- Node.js 18+ 
+- Node.js 20+ (recommended: 22 LTS)
 - pnpm (recommended)
 
 ### Setup
@@ -263,8 +263,8 @@ dist/                # Build output
 ## Requirements
 
 - **SvelteKit**: ^2.0.0 (peer dependency)
-- **Node.js**: 18+ (Lambda runtime)
-- **AWS Lambda**: Compatible with Node.js 18+ runtime
+- **Node.js**: 20+ (recommended: 22 LTS)
+- **AWS Lambda**: Compatible with Node.js 20+ runtime (supports nodejs22.x)
 
 ## License
 

@@ -6,7 +6,7 @@ Thank you for your interest in contributing! This guide will help you get starte
 
 ### Prerequisites
 
-- Node.js 18+ 
+- Node.js 20+ (recommended: 22 LTS)
 - pnpm (recommended package manager)
 - Git
 
