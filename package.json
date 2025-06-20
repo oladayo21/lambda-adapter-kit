@@ -1,6 +1,6 @@
 {
   "name": "@foladayo/lambda-adapter-kit",
-  "version": "1.0.1-1",
+  "version": "1.0.1-2",
   "description": "Lambda event and web request/response conversion utilities",
   "type": "module",
   "main": "./dist/index.js",
