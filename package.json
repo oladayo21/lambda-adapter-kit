@@ -18,6 +18,10 @@
     "./utils": {
       "import": "./dist/utils.js",
       "types": "./dist/utils.d.ts"
+    },
+    "./converter": {
+      "import": "./dist/converter.js",
+      "types": "./dist/converter.d.ts"
     }
   },
   "files": [

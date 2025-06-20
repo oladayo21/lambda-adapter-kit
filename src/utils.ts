@@ -7,6 +7,7 @@ export function normalizeHeaders(
     if (value === undefined) continue;
 
     if (Array.isArray(value)) {
+      // Join multiple header values with comma as per RFC 7230
       normalized[key] = value.join(', ');
     } else {
       normalized[key] = value;
@@ -38,5 +39,6 @@ export function isValidHttpMethod(method: string): boolean {
 }
 
 export function sanitizePath(path: string): string {
+  // Remove duplicate slashes and trailing slash, ensure root path is '/'
   return path.replace(/\/+/g, '/').replace(/\/$/, '') || '/';
 }

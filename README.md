@@ -10,6 +10,10 @@ A SvelteKit adapter for deploying applications to AWS Lambda.
 - 🔧 **Configurable** - Flexible configuration options
 - 🧪 **Well Tested** - Comprehensive test suite with Vitest
 - 🎯 **AWS Lambda Optimized** - Built specifically for Lambda deployment
+- 🔄 **Event Conversion** - Bidirectional Lambda event and web request conversion
+- 🍪 **Cookie Support** - Proper handling of multiple Set-Cookie headers
+- 📁 **Binary Content** - Smart binary content detection with compression support
+- 🔀 **Multi-Value Headers** - Support for API Gateway and ALB response formats
 
 ## Installation
 
@@ -58,6 +62,26 @@ export const handler = createLambdaHandler(app, {
 });
 ```
 
+### Event Conversion
+
+Convert between Lambda events and web requests/responses:
+
+```javascript
+import { 
+  convertLambdaEventToWebRequest, 
+  convertWebResponseToLambdaEvent 
+} from 'svkit-lambda-adapter/converter';
+
+// Convert Lambda event to Web Request
+const request = convertLambdaEventToWebRequest(lambdaEvent);
+
+// Convert Web Response to Lambda event format
+const lambdaResponse = await convertWebResponseToLambdaEvent(response, {
+  binaryMediaTypes: ['image/*', 'application/pdf'],
+  multiValueHeaders: false // Use true for ALB events
+});
+```
+
 ### Utility Functions
 
 Import specific utilities as needed:
@@ -85,6 +109,54 @@ if (isValidHttpMethod(method)) {
 const cleanPath = sanitizePath(requestPath);
 ```
 
+## Advanced Features
+
+### Binary Content Detection
+
+The adapter automatically detects binary content using multiple strategies:
+
+```javascript
+// Automatic detection based on content-type
+const response = new Response(imageData, {
+  headers: { 'content-type': 'image/png' }
+});
+
+// Compression detection (gzip, deflate, br, compress)
+const compressedResponse = new Response(data, {
+  headers: { 
+    'content-type': 'text/html',
+    'content-encoding': 'gzip' 
+  }
+});
+
+// Custom binary media types
+const result = await convertWebResponseToLambdaEvent(response, {
+  binaryMediaTypes: ['application/custom', 'image/*']
+});
+```
+
+### Multi-Value Headers and Cookies
+
+Proper handling of multiple cookies and headers:
+
+```javascript
+// Multiple Set-Cookie headers are preserved
+const response = new Response('OK');
+response.headers.append('set-cookie', 'session=abc123; HttpOnly');
+response.headers.append('set-cookie', 'theme=dark; Path=/');
+
+const lambdaEvent = await convertWebResponseToLambdaEvent(response);
+// Result includes multiValueHeaders: { 'Set-Cookie': ['session=abc123; HttpOnly', 'theme=dark; Path=/'] }
+```
+
+### Lambda Event Types
+
+Supports all major AWS Lambda event types:
+
+- **API Gateway v1.0** - With multi-value headers and query parameters
+- **API Gateway v2.0** - With raw query strings and cookies array  
+- **Application Load Balancer (ALB)** - With multi-value header support
+
 ## Configuration Options
 
 ### Adapter Options
@@ -109,6 +181,15 @@ interface LambdaHandlerOptions {
 }
 ```
 
+### Response Conversion Options
+
+```typescript
+interface ResponseConversionOptions {
+  binaryMediaTypes?: string[];  // Media types to encode as base64
+  multiValueHeaders?: boolean;  // Use multi-value headers format (for ALB)
+}
+```
+
 ## API Reference
 
 ### Main Exports
@@ -120,6 +201,13 @@ interface LambdaHandlerOptions {
 
 - `createLambdaHandler(app, options?)` - Create AWS Lambda handler
 - `LambdaHandlerOptions` - TypeScript interface for handler options
+
+### Converter Exports (`svkit-lambda-adapter/converter`)
+
+- `convertLambdaEventToWebRequest(event)` - Convert Lambda event to Web Request
+- `convertWebResponseToLambdaEvent(response, options?)` - Convert Web Response to Lambda event
+- `ResponseConversionOptions` - TypeScript interface for conversion options
+- `LambdaEvent` - Union type for all supported Lambda event types
 
 ### Utils Exports (`svkit-lambda-adapter/utils`)
 
@@ -160,14 +248,16 @@ pnpm typecheck      # Type check
 
 ```
 src/
-├── index.ts       # Main adapter implementation
-├── handler.ts     # Lambda handler utilities  
-└── utils.ts       # Utility functions
+├── index.ts         # Main adapter implementation
+├── handler.ts       # Lambda handler utilities
+├── converter.ts     # Event conversion utilities
+└── utils.ts         # Utility functions
 
 test/
-└── utils.test.ts  # Test files
+├── utils.test.ts      # Utility function tests
+└── converter.test.ts  # Event conversion tests
 
-dist/              # Build output
+dist/                # Build output
 ```
 
 ## Requirements

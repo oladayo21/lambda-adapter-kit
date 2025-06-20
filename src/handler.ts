@@ -5,16 +5,18 @@ export interface LambdaHandlerOptions {
 }
 
 export interface SvelteKitApp {
-  fetch(request: Request, init?: { platform?: any }): Promise<Response>;
+  fetch(request: Request, init?: { platform?: unknown }): Promise<Response>;
 }
 
 export function createLambdaHandler(app: SvelteKitApp, options: LambdaHandlerOptions = {}) {
   const { binaryMediaTypes = [] } = options;
 
   return async (event: APIGatewayProxyEvent, context: Context): Promise<APIGatewayProxyResult> => {
+    // Handle case-insensitive host header from API Gateway
     const host = event.headers.host || event.headers.Host || 'localhost';
     const url = new URL(event.path, `https://${host}`);
 
+    // Reconstruct query parameters from Lambda event
     if (event.queryStringParameters) {
       for (const [key, value] of Object.entries(event.queryStringParameters)) {
         if (value !== null && value !== undefined) {
@@ -23,6 +25,7 @@ export function createLambdaHandler(app: SvelteKitApp, options: LambdaHandlerOpt
       }
     }
 
+    // Convert Lambda event to standard Request object
     const request = new Request(url.toString(), {
       method: event.httpMethod,
       headers: event.headers as Record<string, string>,
@@ -31,6 +34,7 @@ export function createLambdaHandler(app: SvelteKitApp, options: LambdaHandlerOpt
         : undefined,
     });
 
+    // Pass Lambda context to SvelteKit for platform-specific features
     const response = await app.fetch(request, {
       platform: {
         event,
@@ -41,9 +45,15 @@ export function createLambdaHandler(app: SvelteKitApp, options: LambdaHandlerOpt
     const body = await response.text();
     const isBase64Encoded = shouldBase64Encode(response, binaryMediaTypes);
 
+    // Convert Headers object to plain object for Lambda response
+    const headers: Record<string, string> = {};
+    response.headers.forEach((value, key) => {
+      headers[key] = value;
+    });
+
     return {
       statusCode: response.status,
-      headers: Object.fromEntries(response.headers.entries()),
+      headers,
       body: isBase64Encoded ? Buffer.from(body).toString('base64') : body,
       isBase64Encoded,
     };
@@ -57,6 +67,7 @@ function shouldBase64Encode(response: Response, binaryMediaTypes: string[]): boo
     (type) =>
       contentType.includes(type) ||
       type === '*/*' ||
+      // Support wildcard patterns like 'image/*'
       (type.endsWith('/*') && contentType.startsWith(type.slice(0, -2)))
   );
 }
