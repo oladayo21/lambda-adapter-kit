@@ -281,6 +281,35 @@ dist/                # Build output
 - **Node.js**: 20+ (recommended: 22 LTS)
 - **AWS Lambda**: Compatible with Node.js 20+ runtime (supports nodejs22.x)
 
+## Versioning
+
+This package follows [Semantic Versioning (SemVer)](https://semver.org/):
+
+- **Major (X.0.0)**: Breaking changes to public API
+- **Minor (0.X.0)**: New features, backward compatible
+- **Patch (0.0.X)**: Bug fixes, backward compatible
+
+### API Stability
+
+- **Stable APIs**: All exported functions and interfaces are considered stable
+- **Breaking Changes**: Will only occur in major version bumps
+- **Deprecation Policy**: Features will be deprecated for at least one minor version before removal
+
+### Version History
+
+- **1.0.0**: Initial stable release with full feature set
+  - SvelteKit adapter
+  - Event conversion utilities  
+  - Handler utilities
+  - Comprehensive test suite
+  - Production-ready CI/CD
+  
+### Future Roadmap
+
+- **1.1.x**: Additional framework adapters (Next.js, Nuxt)
+- **1.2.x**: Enhanced binary content handling
+- **2.0.x**: Breaking changes only when necessary for major improvements
+
 ## License
 
 MIT

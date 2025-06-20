@@ -99,10 +99,19 @@ If you prefer manual releases:
 
 ## Version Strategy
 
-- **patch**: Bug fixes (0.1.0 → 0.1.1)
-- **minor**: New features, backward compatible (0.1.0 → 0.2.0)  
-- **major**: Breaking changes (0.1.0 → 1.0.0)
-- **prerelease**: Pre-release versions (0.1.0 → 0.1.1-0)
+This package follows [Semantic Versioning (SemVer)](https://semver.org/):
+
+- **patch**: Bug fixes (1.0.0 → 1.0.1)
+- **minor**: New features, backward compatible (1.0.0 → 1.1.0)  
+- **major**: Breaking changes (1.0.0 → 2.0.0)
+- **prerelease**: Pre-release versions (1.0.0 → 1.1.0-0)
+
+### Release Guidelines
+
+- **Patch**: Bug fixes, security updates, documentation improvements
+- **Minor**: New framework adapters, additional utilities, new features
+- **Major**: Breaking API changes, major architecture changes
+- **Prerelease**: Alpha/beta versions for testing major changes
 
 ## Security Features
 
