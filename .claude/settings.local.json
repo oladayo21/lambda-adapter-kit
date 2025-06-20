@@ -12,7 +12,13 @@
       "Bash(git commit:*)",
       "Bash(mv:*)",
       "mcp__ide__getDiagnostics",
-      "Bash(pnpm format:*)"
+      "Bash(pnpm format:*)",
+      "Bash(git remote add:*)",
+      "Bash(git push:*)",
+      "Bash(ls:*)",
+      "Bash(cat:*)",
+      "Bash(pnpm install:*)",
+      "Bash(pnpm remove:*)"
     ],
     "deny": []
   }
