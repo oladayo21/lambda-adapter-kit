@@ -5,9 +5,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Project Overview
 
 - **Name**: lambda-adapter-kit
-- **Version**: 1.0.0 (stable release)
+- **Version**: 2.0.0 (focused converter release)
 - **Type**: TypeScript Library
-- **Purpose**: Comprehensive toolkit for AWS Lambda adapters and web request/response conversion
+- **Purpose**: Lambda event and web request/response conversion utilities
+- **Focus**: Core converter functions with optional framework integrations
 - **Versioning**: Follows Semantic Versioning (SemVer)
 
 ## Development Setup

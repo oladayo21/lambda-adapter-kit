@@ -1,43 +1,19 @@
-export * from './handler.js';
-export * from './utils.js';
+// Core converter functions
 
-export interface LambdaAdapterOptions {
-  out?: string;
-  precompress?: boolean;
-  env?: {
-    path?: string;
-    host?: string;
-    port?: string;
-  };
-}
+// Converter types
+export type {
+  LambdaEvent,
+  ResponseConversionOptions,
+} from './converter.js';
+export {
+  convertLambdaEventToWebRequest,
+  convertWebResponseToLambdaEvent,
+} from './converter.js';
 
-export interface SvelteKitBuilder {
-  log: {
-    minor(message: string): void;
-    success(message: string): void;
-  };
-  rimraf(path: string): void;
-  writeClient(path: string): void;
-  writePrerendered(path: string): void;
-  writeServer(path: string): void;
-}
-
-export default function adapter(options: LambdaAdapterOptions = {}) {
-  return {
-    name: 'svkit-lambda-adapter',
-    async adapt(builder: SvelteKitBuilder) {
-      const { out = 'build' } = options;
-
-      builder.log.minor('Adapting for AWS Lambda...');
-
-      builder.rimraf(out);
-
-      builder.writeClient(`${out}/client`);
-      builder.writePrerendered(`${out}/prerendered`);
-
-      builder.writeServer(`${out}/server`);
-
-      builder.log.success('AWS Lambda adapter complete');
-    },
-  };
-}
+// Framework-agnostic utilities
+export {
+  isValidHttpMethod,
+  normalizeHeaders,
+  parseMultiValueHeaders,
+  sanitizePath,
+} from './utils.js';

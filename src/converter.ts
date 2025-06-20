@@ -169,12 +169,17 @@ function shouldEncodeAsBase64(response: Response, binaryMediaTypes: string[] = [
   );
 }
 
+// Extended Headers interface for getSetCookie method (newer browsers/runtimes)
+interface HeadersWithGetSetCookie extends Headers {
+  getSetCookie(): string[];
+}
+
 function extractSetCookies(response: Response): string[] {
   if (!response.headers.has('set-cookie')) return [];
 
   // Use getSetCookie() if available (newer browsers/runtimes)
   if ('getSetCookie' in response.headers && typeof response.headers.getSetCookie === 'function') {
-    return (response.headers as any).getSetCookie();
+    return (response.headers as HeadersWithGetSetCookie).getSetCookie();
   }
 
   // Fallback for older implementations - collect all set-cookie values

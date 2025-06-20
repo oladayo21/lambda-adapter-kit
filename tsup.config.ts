@@ -1,7 +1,7 @@
 import { defineConfig } from 'tsup';
 
 export default defineConfig({
-  entry: ['src/index.ts', 'src/handler.ts', 'src/utils.ts', 'src/converter.ts'],
+  entry: ['src/index.ts', 'src/sveltekit.ts', 'src/handler.ts', 'src/utils.ts', 'src/converter.ts'],
   format: ['esm'],
   dts: true,
   clean: true,

@@ -1,34 +1,6 @@
 # lambda-adapter-kit
 
-A comprehensive toolkit for AWS Lambda adapters and web request/response conversion. Includes SvelteKit adapter, event converters, and utilities for seamless Lambda integration.
-
-## What's Included
-
-This toolkit provides everything you need for Lambda integration:
-
-- **🧩 SvelteKit Adapter** - Drop-in adapter for SvelteKit applications
-- **🔄 Event Converters** - Bidirectional conversion between Lambda events and Web API objects
-- **🛠️ Handler Utilities** - Tools for creating robust Lambda handlers
-- **⚙️ Utility Functions** - Header normalization, path sanitization, and validation helpers
-
-Perfect for SvelteKit apps, custom Lambda functions, or any web framework that needs Lambda integration.
-
-> **Future-Ready**: Designed to support additional framework adapters (Next.js, Nuxt, etc.) in upcoming releases.
-
-## Features
-
-- 🚀 **ESM Support** - Modern ES modules with tree-shaking
-- 📦 **Submodule Imports** - Import specific utilities as needed
-- ⚡ **TypeScript** - Full TypeScript support with type declarations
-- 🔧 **Configurable** - Flexible configuration options
-- 🧪 **Well Tested** - Comprehensive test suite with Vitest
-- 🎯 **AWS Lambda Optimized** - Built specifically for Lambda deployment
-- 🔄 **Event Conversion** - Bidirectional Lambda event and web request conversion
-- 🍪 **Cookie Support** - Proper handling of multiple Set-Cookie headers
-- 📁 **Binary Content** - Smart binary content detection with compression support
-- 🔀 **Multi-Value Headers** - Support for API Gateway and ALB response formats
-- 🧩 **SvelteKit Adapter** - Ready-to-use SvelteKit adapter included
-- 🛠️ **Framework Agnostic** - Core utilities work with any web framework
+Lambda event and web request/response conversion utilities for seamless AWS Lambda integration.
 
 ## Installation
 
@@ -42,161 +14,79 @@ yarn add lambda-adapter-kit
 
 ## Usage
 
-### Basic Setup
+This package provides two core functions for converting between AWS Lambda events and standard Web API objects:
 
-In your `svelte.config.js`:
+### `convertLambdaEventToWebRequest(event)`
 
-```javascript
-import adapter from 'lambda-adapter-kit';
+Converts an AWS Lambda event to a standard Web API `Request` object.
 
-export default {
-  kit: {
-    adapter: adapter({
-      out: 'build',
-      precompress: false,
-      env: {
-        path: 'LAMBDA_PATH',
-        host: 'LAMBDA_HOST',
-        port: 'LAMBDA_PORT'
-      }
-    })
-  }
+```typescript
+import { convertLambdaEventToWebRequest } from 'lambda-adapter-kit';
+
+// Lambda handler
+export const handler = async (event, context) => {
+  // Convert Lambda event to Web Request
+  const request = convertLambdaEventToWebRequest(event);
+  
+  // Now you can use standard Web API methods
+  const url = new URL(request.url);
+  const method = request.method;
+  const body = await request.text();
+  const headers = request.headers;
+  
+  // Your application logic here...
+  const response = new Response('Hello World', {
+    status: 200,
+    headers: { 'Content-Type': 'text/plain' }
+  });
+  
+  // Convert back to Lambda format
+  return await convertWebResponseToLambdaEvent(response);
 };
 ```
 
-### Lambda Handler
+### `convertWebResponseToLambdaEvent(response, options?)`
 
-Create a Lambda handler using the provided utilities:
+Converts a standard Web API `Response` object to AWS Lambda event response format.
 
-```javascript
-import { createLambdaHandler } from 'lambda-adapter-kit/handler';
-import { handler as app } from './build/server/index.js';
+```typescript
+import { convertWebResponseToLambdaEvent } from 'lambda-adapter-kit';
 
-export const handler = createLambdaHandler(app, {
-  binaryMediaTypes: ['image/*', 'application/pdf']
-});
-```
-
-### Event Conversion
-
-Convert between Lambda events and web requests/responses:
-
-```javascript
-import { 
-  convertLambdaEventToWebRequest, 
-  convertWebResponseToLambdaEvent 
-} from 'lambda-adapter-kit/converter';
-
-// Convert Lambda event to Web Request
-const request = convertLambdaEventToWebRequest(lambdaEvent);
-
-// Convert Web Response to Lambda event format
-const lambdaResponse = await convertWebResponseToLambdaEvent(response, {
-  binaryMediaTypes: ['image/*', 'application/pdf'],
-  multiValueHeaders: false // Use true for ALB events
-});
-```
-
-### Utility Functions
-
-Import specific utilities as needed:
-
-```javascript
-import { 
-  normalizeHeaders, 
-  parseMultiValueHeaders, 
-  isValidHttpMethod, 
-  sanitizePath 
-} from 'lambda-adapter-kit/utils';
-
-// Normalize headers for Lambda response
-const headers = normalizeHeaders(rawHeaders);
-
-// Parse multi-value headers
-const multiHeaders = parseMultiValueHeaders(headers);
-
-// Validate HTTP method
-if (isValidHttpMethod(method)) {
-  // Process request
-}
-
-// Sanitize URL path
-const cleanPath = sanitizePath(requestPath);
-```
-
-## Advanced Features
-
-### Binary Content Detection
-
-The adapter automatically detects binary content using multiple strategies:
-
-```javascript
-// Automatic detection based on content-type
-const response = new Response(imageData, {
-  headers: { 'content-type': 'image/png' }
-});
-
-// Compression detection (gzip, deflate, br, compress)
-const compressedResponse = new Response(data, {
-  headers: { 
-    'content-type': 'text/html',
-    'content-encoding': 'gzip' 
+// Create a standard Web Response
+const response = new Response(JSON.stringify({ message: 'Hello World' }), {
+  status: 200,
+  headers: {
+    'Content-Type': 'application/json',
+    'Set-Cookie': 'session=abc123; HttpOnly'
   }
 });
 
-// Custom binary media types
-const result = await convertWebResponseToLambdaEvent(response, {
-  binaryMediaTypes: ['application/custom', 'image/*']
+// Convert to Lambda response format
+const lambdaResponse = await convertWebResponseToLambdaEvent(response, {
+  binaryMediaTypes: ['image/*', 'application/pdf'],
+  multiValueHeaders: false // Set to true for ALB events
 });
+
+// Returns: { statusCode: 200, headers: {...}, body: "...", isBase64Encoded: false }
 ```
 
-### Multi-Value Headers and Cookies
+## Supported Lambda Event Types
 
-Proper handling of multiple cookies and headers:
+- **API Gateway v1.0** - Original REST API format
+- **API Gateway v2.0** - HTTP API format with simplified structure  
+- **Application Load Balancer (ALB)** - ALB target group integration
 
-```javascript
-// Multiple Set-Cookie headers are preserved
-const response = new Response('OK');
-response.headers.append('set-cookie', 'session=abc123; HttpOnly');
-response.headers.append('set-cookie', 'theme=dark; Path=/');
+## Features
 
-const lambdaEvent = await convertWebResponseToLambdaEvent(response);
-// Result includes multiValueHeaders: { 'Set-Cookie': ['session=abc123; HttpOnly', 'theme=dark; Path=/'] }
-```
+- **Automatic Binary Detection** - Detects binary content by content-type and content-encoding
+- **Cookie Handling** - Properly handles multiple `Set-Cookie` headers
+- **Multi-Value Headers** - Supports both single and multi-value header formats
+- **Compression Support** - Automatically detects compressed content (gzip, deflate, br, compress)
+- **TypeScript** - Full type safety with comprehensive type definitions
 
-### Lambda Event Types
+## Options
 
-Supports all major AWS Lambda event types:
-
-- **API Gateway v1.0** - With multi-value headers and query parameters
-- **API Gateway v2.0** - With raw query strings and cookies array  
-- **Application Load Balancer (ALB)** - With multi-value header support
-
-## Configuration Options
-
-### Adapter Options
-
-```typescript
-interface LambdaAdapterOptions {
-  out?: string;           // Output directory (default: 'build')
-  precompress?: boolean;  // Enable precompression (default: false)
-  env?: {
-    path?: string;        // Environment variable for path
-    host?: string;        // Environment variable for host
-    port?: string;        // Environment variable for port
-  };
-}
-```
-
-### Handler Options
-
-```typescript
-interface LambdaHandlerOptions {
-  binaryMediaTypes?: string[];  // Media types to encode as base64
-}
-```
-
-### Response Conversion Options
+### `ResponseConversionOptions`
 
 ```typescript
 interface ResponseConversionOptions {
@@ -205,127 +95,57 @@ interface ResponseConversionOptions {
 }
 ```
 
-## API Reference
+**Binary Media Types Examples:**
+- `['image/*', 'application/pdf']` - Specific types
+- `['application/*']` - Wildcard patterns
+- `['*/*']` - All content types
 
-### Main Exports
+## Utility Functions
 
-- `adapter(options?)` - Main SvelteKit adapter function
-- `LambdaAdapterOptions` - TypeScript interface for adapter options
+Additional framework-agnostic utilities are available:
 
-### Handler Exports (`lambda-adapter-kit/handler`)
+```typescript
+import { 
+  normalizeHeaders, 
+  parseMultiValueHeaders, 
+  isValidHttpMethod, 
+  sanitizePath 
+} from 'lambda-adapter-kit';
 
-- `createLambdaHandler(app, options?)` - Create AWS Lambda handler
-- `LambdaHandlerOptions` - TypeScript interface for handler options
+// Normalize headers for consistent format
+const headers = normalizeHeaders(rawHeaders);
 
-### Converter Exports (`lambda-adapter-kit/converter`)
+// Parse comma-separated header values  
+const multiHeaders = parseMultiValueHeaders(headers);
 
-- `convertLambdaEventToWebRequest(event)` - Convert Lambda event to Web Request
-- `convertWebResponseToLambdaEvent(response, options?)` - Convert Web Response to Lambda event
-- `ResponseConversionOptions` - TypeScript interface for conversion options
-- `LambdaEvent` - Union type for all supported Lambda event types
+// Validate HTTP method
+if (isValidHttpMethod(method)) {
+  // Process request
+}
 
-### Utils Exports (`lambda-adapter-kit/utils`)
-
-- `normalizeHeaders(headers)` - Normalize header format
-- `parseMultiValueHeaders(headers)` - Parse comma-separated headers
-- `isValidHttpMethod(method)` - Validate HTTP method
-- `sanitizePath(path)` - Clean and normalize URL paths
-
-## Development
-
-### Prerequisites
-
-- Node.js 20+ (recommended: 22 LTS)
-- pnpm (recommended)
-
-### Setup
-
-```bash
-git clone <repository-url>
-cd lambda-adapter-kit
-pnpm install
+// Clean and normalize URL paths
+const cleanPath = sanitizePath('/path//with///extra/slashes/');
+// Returns: '/path/with/extra/slashes'
 ```
 
-### Scripts
+## TypeScript Support
 
-```bash
-pnpm build          # Build the library
-pnpm dev            # Build in watch mode
-pnpm test           # Run tests
-pnpm test:coverage  # Run tests with coverage
-pnpm lint           # Check code style
-pnpm lint:fix       # Fix linting issues
-pnpm format         # Format code
-pnpm typecheck      # Type check
-```
+All functions and types are fully typed:
 
-### Project Structure
+```typescript
+import type { LambdaEvent, ResponseConversionOptions } from 'lambda-adapter-kit';
 
-```
-src/
-├── index.ts         # Main adapter implementation
-├── handler.ts       # Lambda handler utilities
-├── converter.ts     # Event conversion utilities
-└── utils.ts         # Utility functions
-
-test/
-├── utils.test.ts      # Utility function tests
-└── converter.test.ts  # Event conversion tests
-
-dist/                # Build output
+// LambdaEvent = APIGatewayProxyEvent | APIGatewayProxyEventV2 | ALBEvent
+function handleLambdaEvent(event: LambdaEvent) {
+  return convertLambdaEventToWebRequest(event);
+}
 ```
 
 ## Requirements
 
-- **SvelteKit**: ^2.0.0 (peer dependency)
 - **Node.js**: 20+ (recommended: 22 LTS)
 - **AWS Lambda**: Compatible with Node.js 20+ runtime (supports nodejs22.x)
-
-## Versioning
-
-This package follows [Semantic Versioning (SemVer)](https://semver.org/):
-
-- **Major (X.0.0)**: Breaking changes to public API
-- **Minor (0.X.0)**: New features, backward compatible
-- **Patch (0.0.X)**: Bug fixes, backward compatible
-
-### API Stability
-
-- **Stable APIs**: All exported functions and interfaces are considered stable
-- **Breaking Changes**: Will only occur in major version bumps
-- **Deprecation Policy**: Features will be deprecated for at least one minor version before removal
-
-### Version History
-
-- **1.0.0**: Initial stable release with full feature set
-  - SvelteKit adapter
-  - Event conversion utilities  
-  - Handler utilities
-  - Comprehensive test suite
-  - Production-ready CI/CD
-  
-### Future Roadmap
-
-- **1.1.x**: Additional framework adapters (Next.js, Nuxt)
-- **1.2.x**: Enhanced binary content handling
-- **2.0.x**: Breaking changes only when necessary for major improvements
 
 ## License
 
 MIT
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests for new functionality
-5. Run `pnpm lint` and `pnpm test`
-6. Submit a pull request
-
-## Support
-
-For issues and questions:
-- Open an issue on GitHub
-- Check the documentation
-- Review existing issues and discussions

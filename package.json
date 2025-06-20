@@ -1,7 +1,7 @@
 {
   "name": "lambda-adapter-kit",
-  "version": "1.0.0",
-  "description": "Comprehensive toolkit for AWS Lambda adapters and web request/response conversion",
+  "version": "2.0.0",
+  "description": "Lambda event and web request/response conversion utilities",
   "type": "module",
   "main": "./dist/index.js",
   "module": "./dist/index.js",
@@ -11,17 +11,9 @@
       "import": "./dist/index.js",
       "types": "./dist/index.d.ts"
     },
-    "./handler": {
-      "import": "./dist/handler.js",
-      "types": "./dist/handler.d.ts"
-    },
-    "./utils": {
-      "import": "./dist/utils.js",
-      "types": "./dist/utils.d.ts"
-    },
-    "./converter": {
-      "import": "./dist/converter.js",
-      "types": "./dist/converter.d.ts"
+    "./sveltekit": {
+      "import": "./dist/sveltekit.js",
+      "types": "./dist/sveltekit.d.ts"
     }
   },
   "files": [
@@ -42,12 +34,11 @@
   "keywords": [
     "aws",
     "lambda",
-    "adapter",
-    "serverless",
-    "sveltekit",
     "event-conversion",
     "web-api",
-    "toolkit"
+    "serverless",
+    "converter",
+    "utilities"
   ],
   "author": "",
   "license": "MIT",
@@ -62,5 +53,10 @@
   },
   "peerDependencies": {
     "@sveltejs/kit": "^2.0.0"
+  },
+  "peerDependenciesMeta": {
+    "@sveltejs/kit": {
+      "optional": true
+    }
   }
 }
