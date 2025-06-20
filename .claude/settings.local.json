@@ -18,7 +18,8 @@
       "Bash(ls:*)",
       "Bash(cat:*)",
       "Bash(pnpm install:*)",
-      "Bash(pnpm remove:*)"
+      "Bash(pnpm remove:*)",
+      "Bash(git checkout:*)"
     ],
     "deny": []
   }
