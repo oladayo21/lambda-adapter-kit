@@ -1,4 +1,4 @@
-# Contributing to svkit-lambda-adapter
+# Contributing to lambda-adapter-kit
 
 Thank you for your interest in contributing! This guide will help you get started.
 
@@ -14,8 +14,8 @@ Thank you for your interest in contributing! This guide will help you get starte
 
 1. **Fork and clone the repository:**
    ```bash
-   git clone https://github.com/your-username/svkit-lambda-adapter.git
-   cd svkit-lambda-adapter
+   git clone https://github.com/your-username/lambda-adapter-kit.git
+   cd lambda-adapter-kit
    ```
 
 2. **Install dependencies:**

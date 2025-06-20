@@ -4,9 +4,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-- **Name**: svkit-lambda-adapter
+- **Name**: lambda-adapter-kit
 - **Type**: TypeScript Library
-- **Purpose**: SvelteKit adapter for AWS Lambda deployment
+- **Purpose**: Comprehensive toolkit for AWS Lambda adapters and web request/response conversion
 
 ## Development Setup
 
@@ -46,9 +46,10 @@ dist/             # Build output (generated)
 
 The library provides multiple entry points:
 
-- Main: `svkit-lambda-adapter`
-- Handler: `svkit-lambda-adapter/handler`
-- Utils: `svkit-lambda-adapter/utils`
+- Main: `lambda-adapter-kit` (SvelteKit adapter)
+- Converter: `lambda-adapter-kit/converter` (Event conversion utilities)
+- Handler: `lambda-adapter-kit/handler` (Lambda handler utilities)
+- Utils: `lambda-adapter-kit/utils` (Utility functions)
 
 ## Dependencies
 

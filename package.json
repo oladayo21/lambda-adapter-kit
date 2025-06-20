@@ -1,7 +1,7 @@
 {
-  "name": "svkit-lambda-adapter",
+  "name": "lambda-adapter-kit",
   "version": "0.1.0",
-  "description": "SvelteKit adapter for AWS Lambda",
+  "description": "Comprehensive toolkit for AWS Lambda adapters and web request/response conversion",
   "type": "module",
   "main": "./dist/index.js",
   "module": "./dist/index.js",
@@ -40,11 +40,14 @@
     "prepublishOnly": "pnpm run build"
   },
   "keywords": [
-    "sveltekit",
     "aws",
     "lambda",
     "adapter",
-    "serverless"
+    "serverless",
+    "sveltekit",
+    "event-conversion",
+    "web-api",
+    "toolkit"
   ],
   "author": "",
   "license": "MIT",

@@ -1,6 +1,19 @@
-# svkit-lambda-adapter
+# lambda-adapter-kit
 
-A SvelteKit adapter for deploying applications to AWS Lambda.
+A comprehensive toolkit for AWS Lambda adapters and web request/response conversion. Includes SvelteKit adapter, event converters, and utilities for seamless Lambda integration.
+
+## What's Included
+
+This toolkit provides everything you need for Lambda integration:
+
+- **🧩 SvelteKit Adapter** - Drop-in adapter for SvelteKit applications
+- **🔄 Event Converters** - Bidirectional conversion between Lambda events and Web API objects
+- **🛠️ Handler Utilities** - Tools for creating robust Lambda handlers
+- **⚙️ Utility Functions** - Header normalization, path sanitization, and validation helpers
+
+Perfect for SvelteKit apps, custom Lambda functions, or any web framework that needs Lambda integration.
+
+> **Future-Ready**: Designed to support additional framework adapters (Next.js, Nuxt, etc.) in upcoming releases.
 
 ## Features
 
@@ -14,15 +27,17 @@ A SvelteKit adapter for deploying applications to AWS Lambda.
 - 🍪 **Cookie Support** - Proper handling of multiple Set-Cookie headers
 - 📁 **Binary Content** - Smart binary content detection with compression support
 - 🔀 **Multi-Value Headers** - Support for API Gateway and ALB response formats
+- 🧩 **SvelteKit Adapter** - Ready-to-use SvelteKit adapter included
+- 🛠️ **Framework Agnostic** - Core utilities work with any web framework
 
 ## Installation
 
 ```bash
-npm install svkit-lambda-adapter
+npm install lambda-adapter-kit
 # or
-pnpm add svkit-lambda-adapter
+pnpm add lambda-adapter-kit
 # or
-yarn add svkit-lambda-adapter
+yarn add lambda-adapter-kit
 ```
 
 ## Usage
@@ -32,7 +47,7 @@ yarn add svkit-lambda-adapter
 In your `svelte.config.js`:
 
 ```javascript
-import adapter from 'svkit-lambda-adapter';
+import adapter from 'lambda-adapter-kit';
 
 export default {
   kit: {
@@ -54,7 +69,7 @@ export default {
 Create a Lambda handler using the provided utilities:
 
 ```javascript
-import { createLambdaHandler } from 'svkit-lambda-adapter/handler';
+import { createLambdaHandler } from 'lambda-adapter-kit/handler';
 import { handler as app } from './build/server/index.js';
 
 export const handler = createLambdaHandler(app, {
@@ -70,7 +85,7 @@ Convert between Lambda events and web requests/responses:
 import { 
   convertLambdaEventToWebRequest, 
   convertWebResponseToLambdaEvent 
-} from 'svkit-lambda-adapter/converter';
+} from 'lambda-adapter-kit/converter';
 
 // Convert Lambda event to Web Request
 const request = convertLambdaEventToWebRequest(lambdaEvent);
@@ -92,7 +107,7 @@ import {
   parseMultiValueHeaders, 
   isValidHttpMethod, 
   sanitizePath 
-} from 'svkit-lambda-adapter/utils';
+} from 'lambda-adapter-kit/utils';
 
 // Normalize headers for Lambda response
 const headers = normalizeHeaders(rawHeaders);
@@ -197,19 +212,19 @@ interface ResponseConversionOptions {
 - `adapter(options?)` - Main SvelteKit adapter function
 - `LambdaAdapterOptions` - TypeScript interface for adapter options
 
-### Handler Exports (`svkit-lambda-adapter/handler`)
+### Handler Exports (`lambda-adapter-kit/handler`)
 
 - `createLambdaHandler(app, options?)` - Create AWS Lambda handler
 - `LambdaHandlerOptions` - TypeScript interface for handler options
 
-### Converter Exports (`svkit-lambda-adapter/converter`)
+### Converter Exports (`lambda-adapter-kit/converter`)
 
 - `convertLambdaEventToWebRequest(event)` - Convert Lambda event to Web Request
 - `convertWebResponseToLambdaEvent(response, options?)` - Convert Web Response to Lambda event
 - `ResponseConversionOptions` - TypeScript interface for conversion options
 - `LambdaEvent` - Union type for all supported Lambda event types
 
-### Utils Exports (`svkit-lambda-adapter/utils`)
+### Utils Exports (`lambda-adapter-kit/utils`)
 
 - `normalizeHeaders(headers)` - Normalize header format
 - `parseMultiValueHeaders(headers)` - Parse comma-separated headers
@@ -227,7 +242,7 @@ interface ResponseConversionOptions {
 
 ```bash
 git clone <repository-url>
-cd svkit-lambda-adapter
+cd lambda-adapter-kit
 pnpm install
 ```
 
