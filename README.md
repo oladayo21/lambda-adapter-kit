@@ -1,48 +1,86 @@
 # lambda-adapter-kit
 
-Lambda event and web request/response conversion utilities for seamless AWS Lambda integration.
+**Framework-agnostic AWS Lambda event and web request/response conversion utilities**
+
+[![npm version](https://img.shields.io/npm/v/@foladayo/lambda-adapter-kit)](https://www.npmjs.com/package/@foladayo/lambda-adapter-kit)
+[![TypeScript](https://img.shields.io/badge/TypeScript-Ready-blue)](https://www.typescriptlang.org/)
+
+Convert between AWS Lambda events and standard Web API requests/responses for any framework.
 
 ## Installation
 
 ```bash
-npm install lambda-adapter-kit
+npm install @foladayo/lambda-adapter-kit
 # or
-pnpm add lambda-adapter-kit
+pnpm add @foladayo/lambda-adapter-kit
 # or
-yarn add lambda-adapter-kit
+yarn add @foladayo/lambda-adapter-kit
 ```
 
-## Usage
+## Quick Start
 
-This package provides two core functions for converting between AWS Lambda events and standard Web API objects:
+### Basic Event Conversion
+
+```javascript
+import { convertLambdaEventToWebRequest, convertWebResponseToLambdaEvent } from '@foladayo/lambda-adapter-kit';
+
+export const handler = async (event, context) => {
+  // Convert Lambda event → Web Request
+  const request = convertLambdaEventToWebRequest(event);
+  
+  // Your app logic here
+  const response = new Response('Hello World', {
+    status: 200,
+    headers: { 'Content-Type': 'text/plain' }
+  });
+  
+  // Convert Web Response → Lambda response
+  return await convertWebResponseToLambdaEvent(response);
+};
+```
+
+### Framework Handler
+
+```javascript
+import { createLambdaHandler } from '@foladayo/lambda-adapter-kit';
+
+// Works with any framework that has a fetch method
+const app = {
+  fetch: async (request) => {
+    return new Response(`Hello ${new URL(request.url).pathname}`);
+  }
+};
+
+export const handler = createLambdaHandler(app, {
+  binaryMediaTypes: ['image/*']
+});
+```
+
+## What's Included
+
+- **🔄 Event Converters** - Lambda ↔ Web API conversion 
+- **🛠️ Handler Utilities** - Framework-agnostic Lambda handlers
+- **🎯 TypeScript Ready** - Full type safety
+- **⚡ Zero Dependencies** - Lightweight and fast
+- **🔧 Framework Agnostic** - Works with any fetch-based framework
+
+## Core Functions
 
 ### `convertLambdaEventToWebRequest(event)`
 
 Converts an AWS Lambda event to a standard Web API `Request` object.
 
 ```typescript
-import { convertLambdaEventToWebRequest } from 'lambda-adapter-kit';
+import { convertLambdaEventToWebRequest } from '@foladayo/lambda-adapter-kit';
 
-// Lambda handler
-export const handler = async (event, context) => {
-  // Convert Lambda event to Web Request
-  const request = convertLambdaEventToWebRequest(event);
-  
-  // Now you can use standard Web API methods
-  const url = new URL(request.url);
-  const method = request.method;
-  const body = await request.text();
-  const headers = request.headers;
-  
-  // Your application logic here...
-  const response = new Response('Hello World', {
-    status: 200,
-    headers: { 'Content-Type': 'text/plain' }
-  });
-  
-  // Convert back to Lambda format
-  return await convertWebResponseToLambdaEvent(response);
-};
+// Supports: API Gateway v1/v2, ALB, Lambda Function URLs
+const request = convertLambdaEventToWebRequest(event);
+
+// Now you can use standard Web API methods
+const url = new URL(request.url);
+const method = request.method;
+const body = await request.text();
+const headers = request.headers;
 ```
 
 ### `convertWebResponseToLambdaEvent(response, options?)`
@@ -50,9 +88,8 @@ export const handler = async (event, context) => {
 Converts a standard Web API `Response` object to AWS Lambda event response format.
 
 ```typescript
-import { convertWebResponseToLambdaEvent } from 'lambda-adapter-kit';
+import { convertWebResponseToLambdaEvent } from '@foladayo/lambda-adapter-kit';
 
-// Create a standard Web Response
 const response = new Response(JSON.stringify({ message: 'Hello World' }), {
   status: 200,
   headers: {
@@ -61,7 +98,6 @@ const response = new Response(JSON.stringify({ message: 'Hello World' }), {
   }
 });
 
-// Convert to Lambda response format
 const lambdaResponse = await convertWebResponseToLambdaEvent(response, {
   binaryMediaTypes: ['image/*', 'application/pdf'],
   multiValueHeaders: false // Set to true for ALB events
@@ -70,39 +106,31 @@ const lambdaResponse = await convertWebResponseToLambdaEvent(response, {
 // Returns: { statusCode: 200, headers: {...}, body: "...", isBase64Encoded: false }
 ```
 
-## Supported Lambda Event Types
+### `createLambdaHandler(app, options?)`
 
-- **API Gateway v1.0** - Original REST API format
-- **API Gateway v2.0** - HTTP API format with simplified structure  
-- **Application Load Balancer (ALB)** - ALB target group integration
-
-## Features
-
-- **Automatic Binary Detection** - Detects binary content by content-type and content-encoding
-- **Cookie Handling** - Properly handles multiple `Set-Cookie` headers
-- **Multi-Value Headers** - Supports both single and multi-value header formats
-- **Compression Support** - Automatically detects compressed content (gzip, deflate, br, compress)
-- **TypeScript** - Full type safety with comprehensive type definitions
-
-## Options
-
-### `ResponseConversionOptions`
+Create a Lambda handler for any framework that implements the fetch interface:
 
 ```typescript
-interface ResponseConversionOptions {
-  binaryMediaTypes?: string[];  // Media types to encode as base64
-  multiValueHeaders?: boolean;  // Use multi-value headers format (for ALB)
-}
-```
+import { createLambdaHandler } from '@foladayo/lambda-adapter-kit';
 
-**Binary Media Types Examples:**
-- `['image/*', 'application/pdf']` - Specific types
-- `['application/*']` - Wildcard patterns
-- `['*/*']` - All content types
+// For any framework with a fetch method
+const app = {
+  fetch: async (request) => {
+    // Your application logic
+    return new Response('Hello World');
+  }
+};
+
+// Create Lambda handler
+export const handler = createLambdaHandler(app, {
+  binaryMediaTypes: ['image/*'],
+  multiValueHeaders: false // Set to true for ALB events
+});
+```
 
 ## Utility Functions
 
-Additional framework-agnostic utilities are available:
+Additional framework-agnostic utilities:
 
 ```typescript
 import { 
@@ -110,7 +138,7 @@ import {
   parseMultiValueHeaders, 
   isValidHttpMethod, 
   sanitizePath 
-} from 'lambda-adapter-kit';
+} from '@foladayo/lambda-adapter-kit';
 
 // Normalize headers for consistent format
 const headers = normalizeHeaders(rawHeaders);
@@ -119,21 +147,44 @@ const headers = normalizeHeaders(rawHeaders);
 const multiHeaders = parseMultiValueHeaders(headers);
 
 // Validate HTTP method
-if (isValidHttpMethod(method)) {
+if (isValidHttpMethod('POST')) {
   // Process request
 }
 
 // Clean and normalize URL paths
-const cleanPath = sanitizePath('/path//with///extra/slashes/');
-// Returns: '/path/with/extra/slashes'
+const cleanPath = sanitizePath('/api//users///123');  // → '/api/users/123'
 ```
+
+## Supported Lambda Events
+
+| Event Type | Support | Notes |
+|------------|---------|-------|
+| **API Gateway v1** | ✅ | REST API format |
+| **API Gateway v2** | ✅ | HTTP API format |
+| **ALB (Application Load Balancer)** | ✅ | Multi-value headers |
+| **Lambda Function URLs** | ✅ | Direct invocation |
+
+## Features
+
+- **🔄 Automatic Binary Detection** - Content-type based base64 encoding
+- **🍪 Cookie Handling** - Proper `Set-Cookie` header support  
+- **📦 Multi-Value Headers** - ALB and API Gateway compatibility
+- **🗜️ Compression Support** - Gzip, deflate, brotli detection
+- **🛡️ Type Safety** - Complete TypeScript definitions
+- **🔧 Framework Agnostic** - Works with any fetch-based framework
+- **⚡ Zero Dependencies** - Lightweight and fast
 
 ## TypeScript Support
 
 All functions and types are fully typed:
 
 ```typescript
-import type { LambdaEvent, ResponseConversionOptions } from 'lambda-adapter-kit';
+import type { 
+  LambdaEvent,                    // Union of all Lambda event types
+  ResponseConversionOptions,      // Response conversion options
+  FetchApp,                      // App interface for handlers
+  LambdaHandlerOptions           // Handler configuration
+} from '@foladayo/lambda-adapter-kit';
 
 // LambdaEvent = APIGatewayProxyEvent | APIGatewayProxyEventV2 | ALBEvent
 function handleLambdaEvent(event: LambdaEvent) {
@@ -141,11 +192,92 @@ function handleLambdaEvent(event: LambdaEvent) {
 }
 ```
 
+## Framework Integrations
+
+### SvelteKit
+
+For SvelteKit applications, use the dedicated adapter:
+
+```bash
+npm install @foladayo/sveltekit-adapter-lambda
+```
+
+```javascript
+// svelte.config.js
+import adapter from '@foladayo/sveltekit-adapter-lambda';
+
+export default {
+  kit: {
+    adapter: adapter()
+  }
+};
+```
+
+### Other Frameworks
+
+This package works with any framework that supports the fetch interface:
+
+- **Hono** - Fast web framework
+- **Remix** - Full-stack web framework
+- **Next.js** - (when using App Router)
+- **Custom frameworks** - Any fetch-compatible app
+
+## Examples
+
+### Hono Integration
+
+```typescript
+import { Hono } from 'hono';
+import { createLambdaHandler } from '@foladayo/lambda-adapter-kit';
+
+const app = new Hono();
+
+app.get('/', (c) => c.text('Hello Hono!'));
+app.post('/api/users', async (c) => {
+  const user = await c.req.json();
+  return c.json({ id: 1, ...user });
+});
+
+export const handler = createLambdaHandler(app);
+```
+
+### Express-like Framework
+
+```typescript
+import { createLambdaHandler } from '@foladayo/lambda-adapter-kit';
+
+const app = {
+  fetch: async (request) => {
+    const url = new URL(request.url);
+    
+    if (url.pathname === '/') {
+      return new Response('Hello Express!');
+    }
+    
+    if (url.pathname === '/api/health') {
+      return new Response('OK', { status: 200 });
+    }
+    
+    return new Response('Not Found', { status: 404 });
+  }
+};
+
+export const handler = createLambdaHandler(app);
+```
+
 ## Requirements
 
-- **Node.js**: 20+ (recommended: 22 LTS)
-- **AWS Lambda**: Compatible with Node.js 20+ runtime (supports nodejs22.x)
+- **Node.js**: 20+ (AWS Lambda nodejs20.x runtime)
+
+## Contributing
+
+```bash
+git clone https://github.com/foladayo/lambda-adapter-kit
+cd lambda-adapter-kit
+pnpm install
+pnpm test
+```
 
 ## License
 
-MIT
+MIT © [Foladayo](https://github.com/foladayo)

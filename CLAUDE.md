@@ -5,10 +5,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Project Overview
 
 - **Name**: lambda-adapter-kit
-- **Version**: 2.0.0 (focused converter release)
+- **Version**: 1.0.1-2
 - **Type**: TypeScript Library
-- **Purpose**: Lambda event and web request/response conversion utilities
-- **Focus**: Core converter functions with optional framework integrations
+- **Purpose**: Framework-agnostic Lambda event and web request/response conversion utilities
+- **Focus**: Core converter functions and handler utilities
 - **Versioning**: Follows Semantic Versioning (SemVer)
 
 ## Development Setup
@@ -35,45 +35,51 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ```
 src/
-├── index.ts      # Main adapter export
+├── index.ts      # Core functions export (converters, handlers, utils)
+├── converter.ts  # Event conversion utilities
 ├── handler.ts    # Lambda handler utilities
 └── utils.ts      # Utility functions
 
-test/
-└── utils.test.ts # Test files
+test/             # Test files
+├── converter.test.ts
+├── handler.test.ts
+├── integration.test.ts
+└── utils.test.ts
 
 dist/             # Build output (generated)
 ```
 
 ## Exports
 
-The library provides multiple entry points:
+The library provides a single entry point:
 
-- Main: `lambda-adapter-kit` (SvelteKit adapter)
-- Converter: `lambda-adapter-kit/converter` (Event conversion utilities)
-- Handler: `lambda-adapter-kit/handler` (Lambda handler utilities)
-- Utils: `lambda-adapter-kit/utils` (Utility functions)
+- **Main**: `@foladayo/lambda-adapter-kit` (Framework-agnostic converters, handlers, utilities)
+
+## Related Packages
+
+- **SvelteKit Adapter**: `@foladayo/sveltekit-adapter-lambda` (Uses this package as dependency)
 
 ## Dependencies
 
-- Peer dependency: `@sveltejs/kit ^2.0.0`
+- **No runtime dependencies** - Zero-dependency package
 - Dev dependencies: TypeScript, tsup, Vitest, Biome
 
 ## Architecture Notes
 
 ### Core Components
 
-- **Main Adapter (`src/index.ts`)** - Implements SvelteKit adapter interface for Lambda builds
-- **Lambda Handler (`src/handler.ts`)** - Bridges API Gateway events to SvelteKit's fetch interface
+- **Event Converters (`src/converter.ts`)** - Convert Lambda events ↔ Web API Request/Response
+- **Handler Utilities (`src/handler.ts`)** - Framework-agnostic Lambda handler creation
 - **Utilities (`src/utils.ts`)** - Header normalization, HTTP validation, and path sanitization
 
 ### Technical Details
 
 - ESM-only library targeting Node.js ES2022
-- Modular exports system with three entry points
+- Zero runtime dependencies for maximum compatibility
 - Uses Biome for consistent code style (2-space indents, single quotes)
 - Strict TypeScript configuration with comprehensive type checking
-- Binary content handling for Lambda responses
+- Supports all Lambda event types (API Gateway v1/v2, ALB, Function URLs)
+- Framework-agnostic design works with any fetch-based application
 
 ## Code Style Guidelines
 

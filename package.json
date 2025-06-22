@@ -1,7 +1,7 @@
 {
   "name": "@foladayo/lambda-adapter-kit",
-  "version": "1.0.1-2",
-  "description": "Lambda event and web request/response conversion utilities",
+  "version": "1.0.2",
+  "description": "Framework-agnostic Lambda event and web request/response conversion utilities",
   "type": "module",
   "main": "./dist/index.js",
   "module": "./dist/index.js",
@@ -10,10 +10,6 @@
     ".": {
       "import": "./dist/index.js",
       "types": "./dist/index.d.ts"
-    },
-    "./sveltekit": {
-      "import": "./dist/sveltekit.js",
-      "types": "./dist/sveltekit.d.ts"
     }
   },
   "files": [
@@ -38,9 +34,18 @@
     "web-api",
     "serverless",
     "converter",
-    "utilities"
+    "utilities",
+    "framework-agnostic"
   ],
-  "author": "",
+  "author": "Oladayo Fagbemi",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/oladayo21/lambda-adapter-kit.git"
+  },
+  "homepage": "https://github.com/oladayo21/lambda-adapter-kit#readme",
+  "bugs": {
+    "url": "https://github.com/oladayo21/lambda-adapter-kit/issues"
+  },
   "license": "MIT",
   "devDependencies": {
     "@biomejs/biome": "^2.0.0",
@@ -50,13 +55,5 @@
     "tsup": "^8.5.0",
     "typescript": "^5.8.3",
     "vitest": "^3.2.4"
-  },
-  "peerDependencies": {
-    "@sveltejs/kit": "^2.0.0"
-  },
-  "peerDependenciesMeta": {
-    "@sveltejs/kit": {
-      "optional": true
-    }
   }
 }

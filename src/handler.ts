@@ -1,73 +1,47 @@
-import type { APIGatewayProxyEvent, APIGatewayProxyResult, Context } from 'aws-lambda';
+import type { Context } from 'aws-lambda';
+import type { LambdaEvent, ResponseConversionOptions } from './converter.js';
+import { convertLambdaEventToWebRequest, convertWebResponseToLambdaEvent } from './converter.js';
 
-export interface LambdaHandlerOptions {
-  binaryMediaTypes?: string[];
+export interface LambdaHandlerOptions extends ResponseConversionOptions {}
+
+/** Framework-agnostic interface for any fetch-based application */
+export interface FetchApp {
+  fetch(request: Request): Promise<Response>;
 }
 
-export interface SvelteKitApp {
-  fetch(request: Request, init?: { platform?: unknown }): Promise<Response>;
-}
+/**
+ * Creates a Lambda handler that bridges between Lambda events and fetch-based applications.
+ * Converts Lambda events to Web Request objects, calls the app's fetch handler,
+ * then converts the Web Response back to Lambda's expected format.
+ *
+ * @param app - Any application that implements the fetch interface
+ * @param options - Configuration options for the handler
+ * @returns Lambda handler function
+ */
+export function createLambdaHandler(app: FetchApp, options: LambdaHandlerOptions = {}) {
+  return async (event: LambdaEvent, _context: Context) => {
+    try {
+      // Convert Lambda event to Web Request
+      const request = convertLambdaEventToWebRequest(event);
 
-export function createLambdaHandler(app: SvelteKitApp, options: LambdaHandlerOptions = {}) {
-  const { binaryMediaTypes = [] } = options;
+      const response = await app.fetch(request);
 
-  return async (event: APIGatewayProxyEvent, context: Context): Promise<APIGatewayProxyResult> => {
-    // Handle case-insensitive host header from API Gateway
-    const host = event.headers.host || event.headers.Host || 'localhost';
-    const url = new URL(event.path, `https://${host}`);
+      // Convert Web Response back to Lambda response
+      const lambdaResponse = await convertWebResponseToLambdaEvent(response, options);
 
-    // Reconstruct query parameters from Lambda event
-    if (event.queryStringParameters) {
-      for (const [key, value] of Object.entries(event.queryStringParameters)) {
-        if (value !== null && value !== undefined) {
-          url.searchParams.set(key, value);
-        }
-      }
+      return lambdaResponse;
+    } catch {
+      // Return a proper error response
+      return {
+        statusCode: 500,
+        headers: {
+          'content-type': 'application/json',
+        },
+        body: JSON.stringify({
+          error: 'Internal Server Error',
+        }),
+        isBase64Encoded: false,
+      };
     }
-
-    // Convert Lambda event to standard Request object
-    const request = new Request(url.toString(), {
-      method: event.httpMethod,
-      headers: event.headers as Record<string, string>,
-      body: event.body
-        ? Buffer.from(event.body, event.isBase64Encoded ? 'base64' : 'utf8')
-        : undefined,
-    });
-
-    // Pass Lambda context to SvelteKit for platform-specific features
-    const response = await app.fetch(request, {
-      platform: {
-        event,
-        context,
-      },
-    });
-
-    const body = await response.text();
-    const isBase64Encoded = shouldBase64Encode(response, binaryMediaTypes);
-
-    // Convert Headers object to plain object for Lambda response
-    const headers: Record<string, string> = {};
-    response.headers.forEach((value, key) => {
-      headers[key] = value;
-    });
-
-    return {
-      statusCode: response.status,
-      headers,
-      body: isBase64Encoded ? Buffer.from(body).toString('base64') : body,
-      isBase64Encoded,
-    };
   };
-}
-
-function shouldBase64Encode(response: Response, binaryMediaTypes: string[]): boolean {
-  const contentType = response.headers.get('content-type') || '';
-
-  return binaryMediaTypes.some(
-    (type) =>
-      contentType.includes(type) ||
-      type === '*/*' ||
-      // Support wildcard patterns like 'image/*'
-      (type.endsWith('/*') && contentType.startsWith(type.slice(0, -2)))
-  );
 }
