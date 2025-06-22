@@ -186,7 +186,6 @@ describe('createLambdaHandler', () => {
     });
   });
 
-
   describe('error handling', () => {
     it('should handle converter errors and return 500 response', async () => {
       const event: APIGatewayProxyEvent = {
@@ -270,7 +269,6 @@ describe('createLambdaHandler', () => {
         isBase64Encoded: false,
       });
     });
-
 
     it('should handle response conversion errors', async () => {
       const event: APIGatewayProxyEvent = {

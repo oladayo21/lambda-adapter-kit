@@ -90,3 +90,6 @@ The library provides a single entry point:
 - Focus on explaining "why" rather than "what" for non-obvious implementation details
 - Document integration points, API Gateway specifics, and RFC compliance where relevant
 
+## Development Workflow
+
+- Make sure that after every change you run all necessary checks for linting, formatting and tests
