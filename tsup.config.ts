@@ -1,13 +1,13 @@
-import { defineConfig } from 'tsup';
+import { defineConfig } from "tsup";
 
 export default defineConfig({
-  entry: ['src/index.ts', 'src/sveltekit.ts', 'src/handler.ts', 'src/utils.ts', 'src/converter.ts'],
-  format: ['esm'],
+  entry: ["src/index.ts"],
+  format: ["esm"],
   dts: true,
   clean: true,
   sourcemap: true,
   splitting: false,
-  minify: false,
-  target: 'es2022',
-  outDir: 'dist',
+  minify: true,
+  target: "es2022",
+  outDir: "dist",
 });

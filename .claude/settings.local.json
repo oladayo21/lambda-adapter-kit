@@ -19,7 +19,15 @@
       "Bash(cat:*)",
       "Bash(pnpm install:*)",
       "Bash(pnpm remove:*)",
-      "Bash(git checkout:*)"
+      "Bash(git checkout:*)",
+      "Bash(find:*)",
+      "Bash(rm:*)",
+      "Bash(grep:*)",
+      "Bash(cp:*)",
+      "Bash(rg:*)",
+      "Bash(pnpm --prefix ../sveltekit-adapter-lambda build)",
+      "Bash(pnpm --prefix ../sveltekit-adapter-lambda test:run)",
+      "Bash(sed:*)"
     ],
     "deny": []
   }

@@ -1,6 +1,6 @@
-// Core converter functions
+// Core converter functions and utilities (framework-agnostic)
 
-// Converter types
+// Converter types and functions
 export type {
   LambdaEvent,
   ResponseConversionOptions,
@@ -10,7 +10,14 @@ export {
   convertWebResponseToLambdaEvent,
 } from './converter.js';
 
-// Framework-agnostic utilities
+// Handler utilities
+export type {
+  FetchApp,
+  LambdaHandlerOptions,
+} from './handler.js';
+export { createLambdaHandler } from './handler.js';
+
+// Utility functions
 export {
   isValidHttpMethod,
   normalizeHeaders,
