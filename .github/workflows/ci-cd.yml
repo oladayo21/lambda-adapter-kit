@@ -9,7 +9,7 @@ on:
     types: [published]
 
 env:
-  NODE_VERSION: '22'
+  NODE_VERSION: "22"
 
 jobs:
   test:
@@ -28,7 +28,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'pnpm'
+          cache: "pnpm"
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -44,6 +44,9 @@ jobs:
 
       - name: Test build
         run: pnpm build
+
+      - name: Publish pre-release build
+        run: pnpm dlx pkg-pr-new publish
 
   publish:
     name: Publish to npm
@@ -66,8 +69,8 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-          cache: 'pnpm'
-          registry-url: 'https://registry.npmjs.org'
+          cache: "pnpm"
+          registry-url: "https://registry.npmjs.org"
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -75,20 +78,18 @@ jobs:
       - name: Build package
         run: pnpm build
 
-
       - name: Update package version
         run: |
           # Extract version from git tag (remove 'v' prefix if present)
           VERSION="${{ github.event.release.tag_name }}"
           VERSION="${VERSION#v}"
-          
+
           # Update package.json version
           pnpm version "$VERSION" --no-git-tag-version
-          
+
           echo "Updated package.json to version $VERSION"
 
       - name: Publish to npm
         run: pnpm publish --access public --provenance
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-
