@@ -95,3 +95,5 @@ The library provides a single entry point:
 ## Development Workflow
 
 - Make sure that after every change you run all necessary checks for linting, formatting and tests
+- make sure to always create a new branch before starting to work on a new feature or bug fix
+
