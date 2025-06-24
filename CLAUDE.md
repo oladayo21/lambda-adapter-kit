@@ -5,7 +5,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Project Overview
 
 - **Name**: lambda-adapter-kit
-- **Version**: 1.0.1-2
+- **Version**: 1.0.3-0
 - **Type**: TypeScript Library
 - **Purpose**: Framework-agnostic Lambda event and web request/response conversion utilities
 - **Focus**: Core converter functions and handler utilities
@@ -23,9 +23,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 - `pnpm build` - Build the library using tsup
 - `pnpm dev` - Build in watch mode
-- `pnpm test` - Run tests with Vitest
+- `pnpm test` - Run tests with Vitest in watch mode
 - `pnpm test:run` - Run tests once
-- `pnpm test:coverage` - Run tests with coverage
+- `pnpm test:coverage` - Run tests with coverage (outputs to coverage/ directory)
 - `pnpm lint` - Check code with Biome
 - `pnpm lint:fix` - Fix linting issues
 - `pnpm format` - Format code with Biome
@@ -76,10 +76,12 @@ The library provides a single entry point:
 
 - ESM-only library targeting Node.js ES2022
 - Zero runtime dependencies for maximum compatibility
-- Uses Biome for consistent code style (2-space indents, single quotes)
+- Uses Biome for consistent code style (2-space indents, single quotes, semicolons, trailing commas)
+- Biome configured with 100-character line width and ES5 trailing commas
 - Strict TypeScript configuration with comprehensive type checking
 - Supports all Lambda event types (API Gateway v1/v2, ALB, Function URLs)
 - Framework-agnostic design works with any fetch-based application
+- Uses .js file extensions in imports for ESM compatibility
 
 ## Code Style Guidelines
 

@@ -7,6 +7,8 @@
 
 Convert between AWS Lambda events and standard Web API requests/responses for any framework.
 
+> **Inspiration**: This package is heavily inspired by the [Hono.js AWS Lambda adapter](https://hono.dev/getting-started/aws-lambda), reimagined as a framework-agnostic utility library.
+
 ## Installation
 
 ```bash
