@@ -24,7 +24,10 @@ yarn add @foladayo/lambda-adapter-kit
 ### Basic Event Conversion
 
 ```javascript
-import { convertLambdaEventToWebRequest, convertWebResponseToLambdaEvent } from "@foladayo/lambda-adapter-kit";
+import {
+  convertLambdaEventToWebRequest,
+  convertWebResponseToLambdaEvent,
+} from "@foladayo/lambda-adapter-kit";
 
 export const handler = async (event, context) => {
   // Convert Lambda event → Web Request
@@ -213,31 +216,6 @@ export default {
     adapter: adapter(),
   },
 };
-```
-
-### Other Frameworks
-
-This package can be used with any framework that supports the fetch interface:
-
-- **Hono** - Fast web framework
-
-## Examples
-
-### Hono Integration
-
-```typescript
-import { Hono } from "hono";
-import { createLambdaHandler } from "@foladayo/lambda-adapter-kit";
-
-const app = new Hono();
-
-app.get("/", (c) => c.text("Hello Hono!"));
-app.post("/api/users", async (c) => {
-  const user = await c.req.json();
-  return c.json({ id: 1, ...user });
-});
-
-export const handler = createLambdaHandler(app);
 ```
 
 ## Requirements
